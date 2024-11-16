@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="contact us.css">
+
+   
+</head>
+<body>
+    
+    <div class="container">
+        <div class="success-message" id="successMessage">
+        Your message has been successfully sent! We will contact you soon.
+    </div>
+        <div class="header">
+            <h2>Contact Us</h2>
+        </div>
+
+       
+
+        <form id="contactForm" class="form-grid" novalidate>
+            <div class="form-group">
+                <label>First Name <span class="required">*</span></label>
+                <input type="text" id="firstName" name="firstName">
+                <div class="error-message" id="firstNameError"></div>
+            </div>
+
+            <div class="form-group">
+                <label>last Name <span class="required">*</span></label>
+                <input type="text" id="lastName" name="lastName">
+                <div class="error-message" id="lastNameError"></div>
+            </div>
+
+            <div class="form-group full-width">
+                <label>Email Address <span class="required">*</span></label>
+                <input type="email" id="email" name="email" >
+                <div class="error-message" id="emailError"></div>
+            </div>
+
+            <div class="form-group full-width">
+                <label>Query Type <span class="required">*</span></label>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="queryType" value="general">
+                        General Enquiry   
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="queryType" value="support">
+                        Support Request
+                    </label>
+                </div>
+                <div class="error-message" id="queryTypeError"></div>
+            </div>
+
+            <div class="form-group full-width">
+                <label>Message <span class="required">*</span></label>
+                <textarea id="message" name="message" rows="5"></textarea>
+                <div class="error-message" id="messageError"></div>
+            </div>
+
+            <div class="consent-group">
+                <input type="checkbox" id="consent" name="consent">
+                <label for="consent">
+                    I consent to being contacted by the team <span class="required">*</span>
+                </label>
+                
+            </div>
+            <div class="error-message" id="consentError"></div>
+            <button type="submit">submit</button>
+        </form>
+    </div>
+
+    <script>
+       
+        function showError(elementId, message) {
+            const element = document.getElementById(elementId);
+            const errorElement = document.getElementById(elementId + 'Error');
+            if (element && errorElement) {
+                element.classList.add('error-input');
+                errorElement.textContent = message;
+                errorElement.classList.add('visible');
+            }
+        }
+
+        
+        function hideError(elementId) {
+            const element = document.getElementById(elementId);
+            const errorElement = document.getElementById(elementId + 'Error');
+            if (element && errorElement) {
+                element.classList.remove('error-input');
+                errorElement.classList.remove('visible');
+            }
+        }
+
+        
+        function isValidEmail(email) {
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return emailRegex.test(email);
+        }
+
+      
+        document.querySelectorAll('input[type="text"], input[type="email"], textarea').forEach(element => {
+            element.addEventListener('input', function() {
+                validateField(this.id, this.value);
+            });
+
+            element.addEventListener('blur', function() {
+                validateField(this.id, this.value);
+            });
+        });
+
+        
+        function validateField(fieldId, value) {
+            switch(fieldId) {
+                case 'firstName':
+                    if (value.trim().length < 1) {
+                        showError(fieldId, 'This field is required');
+                        return false;
+                    }
+                    break;
+                case 'lastName':
+                    if (value.trim().length < 1) {
+                        showError(fieldId, 'This field is required');
+                        return false;
+                    }
+                    break;
+                case 'email':
+                    if (!isValidEmail(value)) {
+                        showError(fieldId, 'This field is required');
+                        return false;
+                    }
+                    break;
+                case 'message':
+                    if (value.trim().length < 1) {
+                        showError(fieldId, 'This field is required');
+                        return false;
+                    }
+                    break;
+            }
+            hideError(fieldId);
+            return true;
+        }
+
+        
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let isValid = true;
+
+         
+            const fields = ['firstName', 'lastName', 'email', 'message'];
+            fields.forEach(field => {
+                const element = document.getElementById(field);
+                if (!validateField(field, element.value)) {
+                    isValid = false;
+                }
+            });
+
+           
+            const queryType = document.querySelector('input[name="queryType"]:checked');
+            if (!queryType) {
+                showError('queryType', 'This field is required');
+                isValid = false;
+            } else {
+                hideError('queryType');
+            }
+
+         
+            const consent = document.getElementById('consent');
+            if (!consent.checked) {
+                showError('consent', 'This field is required');
+                isValid = false;
+            } else {
+                hideError('consent');
+            }
+
+            if (isValid) {
+               
+                const successMessage = document.getElementById('successMessage');
+                successMessage.style.display = 'block';
+                successMessage.scrollIntoView({ behavior: 'smooth' });
+
+               
+                setTimeout(() => {
+                    this.reset();
+                    successMessage.style.display = 'none';
+                }, 2000);
+
+                console.log('Données du formulaire:', formData);
+            }
+        });
+
+       
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', () => hideError('queryType'));
+        });
+
+        document.getElementById('consent').addEventListener('change', function() {
+            if (this.checked) {
+                hideError('consent');
+            }
+        });
+    </script>
+</body>
+</html>
